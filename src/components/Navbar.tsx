@@ -12,9 +12,16 @@ const Navbar = () => {
           <Link href="/" className="text-2xl font-bold tracking-tight text-gray-900 hover:text-gray-700 transition">
             PERFUMY
           </Link>
-
+            <div className="flex items-center space-x-4">
+                <Link href="/mezczyzni" className=" font-medium text-gray-700 hover:text-black transition">
+                 Dla mężczyzn
+               </Link>
+               <Link href="/kobiety" className=" font-medium text-gray-700 hover:text-black transition">
+                 Dla kobiet
+               </Link>
+            </div>
           <div className="flex items-center space-x-6">
-            
+               
               <Link href="/login" className=" font-medium text-gray-700 hover:text-black transition">
                  Zaloguj
               </Link>
