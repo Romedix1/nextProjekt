@@ -1,10 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react"; 
+import { useState } from "react";
+import { signInWithEmail } from "./actions";
+import ErrorBlock from "@/components/ErrorBlock";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  async function handleSubmit(formData: FormData) {
+    setError(null);
+    const result = await signInWithEmail(formData);
+
+    if (result?.error) {
+      setError(result.error);
+    } else {
+      router.push("/");
+    }
+  }
 
   return (
 
@@ -22,7 +37,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" >
+        <form action={handleSubmit} className="mt-8 space-y-6" >
           <div className="rounded-md shadow-sm space-y-4">
             
             <div>
@@ -48,6 +63,9 @@ export default function LoginPage() {
                 placeholder="Hasło"
               />
             </div>
+            {error && (
+              <ErrorBlock error={error} />
+            )}
           </div>
 
           <div>
