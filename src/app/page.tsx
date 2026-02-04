@@ -1,14 +1,17 @@
 import ProductList from "../components/ProductList";
-
+import MainPageVideo from "@/components/MainPageVideo";
 export default function Home() {
   return (
     <div>
-      <div style={{ textAlign: 'center', margin: '40px 0' }}>
-        <h1 style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>Nasze bestsellery</h1>
-        <p style={{ color: '#666' }}>Wybierz zapach idealny dla siebie</p>
-      </div>
+      <MainPageVideo /> 
+      <div id="bestsellers" className="max-w-7xl mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900">Nasze Bestsellery</h2>
+          <p className="mt-4 text-gray-500 text-lg">Wybierz zapach, który podkreśli Twój styl</p>
+        </div>
       
       <ProductList />
+      </div>
     </div>
   );
 }
