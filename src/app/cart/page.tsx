@@ -55,9 +55,12 @@ export default function CartPage() {
             <span>Razem</span>
             <span>{cartTotal} PLN</span>
           </div>
-          <button className="w-full bg-black text-white py-3 rounded hover:bg-gray-800 font-bold">
-            PRZEJDŹ DO PŁATNOŚCI
-          </button>
+          <Link 
+  href="/checkout" 
+  className="block w-full text-center bg-black text-white py-3 rounded hover:bg-gray-800 font-bold"
+>
+  PRZEJDŹ DO PŁATNOŚCI
+</Link>
         </div>
       </div>
     </div>
