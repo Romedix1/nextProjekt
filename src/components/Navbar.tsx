@@ -21,6 +21,9 @@ export default async function Navbar() {
                <Link href="/kobiety" className=" font-medium text-gray-700 hover:text-black transition">
                  Dla kobiet
                </Link>
+               <Link href="/unisex" className=" font-medium text-gray-700 hover:text-black transition">
+                 Unisex
+               </Link>
             </div>
           <div className="flex items-center space-x-6">
               {!isAuthenticated ? (
