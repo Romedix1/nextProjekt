@@ -29,12 +29,12 @@ export default function CartSidebar() {
 
       {isCartOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-[60]" 
+          className="fixed inset-0 bg-black/50 z-60" 
           onClick={toggleCart} 
         />
       )}
 
-      <div className={`fixed top-0 right-0 h-full w-[400px] bg-white shadow-2xl z-[70] transform transition-transform duration-300 ease-in-out ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`fixed top-0 right-0 h-full w-100 bg-white shadow-2xl z-70 transform transition-transform duration-300 ease-in-out ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         
         <div className="p-4 border-b flex justify-between items-center">
           <h2 className="text-lg font-bold">Twój koszyk ({cartCount})</h2>
