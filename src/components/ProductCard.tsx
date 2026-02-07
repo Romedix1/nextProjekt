@@ -3,6 +3,9 @@ import React from 'react';
 import Link from 'next/link'; 
 import Image from 'next/image';
 import { Product } from '@/types/product';
+import { useCart } from '@/context/CartContext';
+
+// Zrób żeby dało się dodać do koszyka
 
 type ProductCardProps = {
   product: Product;
