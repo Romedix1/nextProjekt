@@ -11,13 +11,13 @@ export default function LoginPage() {
   const router = useRouter();
 
   async function handleSubmit(formData: FormData) {
-    setError(null);
-    const result = await signInWithEmail(formData);
+    setError(null)
+    const result = await signInWithEmail(formData)
 
     if (result?.error) {
-      setError(result.error);
+      setError(result.error)
     } else {
-      router.push("/");
+      window.location.href = "/"
     }
   }
 

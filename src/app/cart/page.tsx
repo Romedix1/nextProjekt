@@ -22,7 +22,7 @@ export default function CartPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">
           {items.map((item) => (
-            <div key={item.id} className="flex gap-4 border p-4 rounded-lg">
+            <div key={item.product_id || item.id} className="flex gap-4 border p-4 rounded-lg">
               <div className="w-24 h-24 bg-gray-100 rounded-md"></div>
               <div className="flex-1">
                 <h3 className="font-bold text-lg">{item.name}</h3>
@@ -31,7 +31,7 @@ export default function CartPage() {
               <div className="text-right">
                 <p className="font-bold text-lg">{item.price} PLN</p>
                 <button 
-                  onClick={() => removeFromCart(item.id)}
+                  onClick={() => removeFromCart(item.product_id)}
                   className="text-red-500 text-sm mt-2 hover:underline"
                 >
                   Usuń
@@ -45,7 +45,7 @@ export default function CartPage() {
           <h2 className="text-xl font-bold mb-4">Podsumowanie</h2>
           <div className="flex justify-between mb-2">
             <span>Wartość produktów</span>
-            <span>{cartTotal.toFixed(2)} PLN</span>
+            <span>{cartTotal} PLN</span>
           </div>
           <div className="flex justify-between mb-4 border-b pb-4">
             <span>Dostawa</span>
@@ -53,7 +53,7 @@ export default function CartPage() {
           </div>
           <div className="flex justify-between text-xl font-bold mb-6">
             <span>Razem</span>
-            <span>{cartTotal.toFixed(2)} PLN</span>
+            <span>{cartTotal} PLN</span>
           </div>
           <button className="w-full bg-black text-white py-3 rounded hover:bg-gray-800 font-bold">
             PRZEJDŹ DO PŁATNOŚCI

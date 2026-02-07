@@ -3,7 +3,7 @@ import React from 'react';
 import Link from 'next/link'; 
 import Image from 'next/image';
 import { Product } from '@/types/product';
-import { useCart } from '@/context/CartContext';
+import AddToCartButton from './ui/AddToCartButton';
 
 // Zrób żeby dało się dodać do koszyka
 
@@ -29,7 +29,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <h3 style={{ margin: '10px 0' }}>{product.name}</h3>
       <p>{product.price} zł</p>
       
-      <button onClick={() => alert('Dodano!')}>Dodaj do koszyka</button>
+      <AddToCartButton productId={product.id} name={product.name} price={product.price} image={product.image_url} />
     </div>
   );
 };
