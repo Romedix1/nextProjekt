@@ -3,10 +3,12 @@ import { getUser } from "@/lib/getUser";
 import Link from "next/link";
 import Image from "next/image";
 import CartSidebar from "@/components/CartSideBar";
+import LogoutButton from "./ui/LogoutButton";
 
 export default async function Navbar() {
   const user = await getUser();
   const isAuthenticated = !!user;
+
 
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -33,9 +35,7 @@ export default async function Navbar() {
                   Zaloguj
                 </Link>
               ) : (
-                <form action={signOut}>
-                  <button type="submit" className="font-medium text-gray-700 hover:text-black cursor-pointer duration-200">Wyloguj ({user?.user_metadata.first_name})</button>
-                </form>
+                <LogoutButton userName={user?.user_metadata.first_name} />
               )}
 
 

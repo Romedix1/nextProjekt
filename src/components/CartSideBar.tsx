@@ -45,26 +45,30 @@ export default function CartSidebar() {
           {items.length === 0 ? (
             <p className="text-center text-gray-500 mt-10">Koszyk jest pusty.</p>
           ) : (
-            items.map((item) => (
-              <div key={item.id} className="flex gap-4 mb-6 border-b pb-4">
-                <div className="w-20 h-20 bg-gray-100 relative">
-                   <span className="text-xs flex items-center justify-center h-full">IMG</span>
+            items.map((item) => {
+              const uniqueId = item.product_id || item.id;
+
+              return (
+                <div key={`sidebar-${uniqueId}`} className="flex gap-4 mb-6 border-b pb-4">
+                  <div className="w-20 h-20 bg-gray-100 relative">
+                    <span className="text-xs flex items-center justify-center h-full">IMG</span>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-medium text-sm">{item.name}</h3>
+                    <p className="text-gray-500 text-xs">Ilość: {item.quantity}</p>
+                    <p className="font-bold mt-1">{(Number(item.price) || 0).toFixed(2)} PLN</p>
+                  </div>
+                  <button onClick={() => removeFromCart(item.product_id)} className="text-red-500 text-sm hover:underline">Usuń</button>
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-medium text-sm">{item.name}</h3>
-                  <p className="text-gray-500 text-xs">Ilość: {item.quantity}</p>
-                  <p className="font-bold mt-1">{item.price} PLN</p>
-                </div>
-                <button onClick={() => removeFromCart(item.id)} className="text-red-500 text-sm hover:underline">Usuń</button>
-              </div>
-            ))
-          )}
+              )
+            }))
+          }
         </div>
 
         <div className="absolute bottom-0 left-0 w-full bg-gray-50 p-4 border-t">
           <div className="flex justify-between mb-4 text-lg font-bold">
             <span>Suma:</span>
-            <span>{cartTotal.toFixed(2)} PLN</span>
+            <span>{(Number(cartTotal) || 0).toFixed(2)} PLN</span>
           </div>
           <Link 
             href="/cart" 
