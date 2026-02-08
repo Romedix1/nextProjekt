@@ -80,7 +80,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           if (existingIdx > -1) {
             acc[existingIdx].quantity += (curr.quantity || 1)
           } else {
-            acc.push({ ...curr, name: productInfo?.name || "Produkt", price: productInfo?.price || 0, image: productInfo?.image || "" })
+            acc.push({ ...curr, name: productInfo?.name || "Produkt", price: productInfo?.price || 0, image: productInfo?.image_url || productInfo?.image || "" })
           }
           return acc
         }, [])
@@ -222,7 +222,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
       }
     } catch (err) {
-      console.error(err)
+      // console.error(err)
     }
   }
 

@@ -11,7 +11,7 @@ export default function CartSidebar() {
     <>
       <button 
         onClick={toggleCart} 
-        className="relative group text-gray-700 hover:text-black transition flex items-center"
+        className="relative group text-gray-700 hover:text-black transition flex items-center cursor-pointer"
       >
         <span className="text-xl">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -38,7 +38,7 @@ export default function CartSidebar() {
         
         <div className="p-4 border-b flex justify-between items-center">
           <h2 className="text-lg font-bold">Twój koszyk ({cartCount})</h2>
-          <button onClick={toggleCart} className="p-2 hover:bg-gray-100 rounded-full">✕</button>
+          <button onClick={toggleCart} className="p-2 hover:bg-gray-100 rounded-full cursor-pointer">✕</button>
         </div>
 
         <div className="p-4 overflow-y-auto h-[calc(100vh-200px)]">
@@ -51,14 +51,14 @@ export default function CartSidebar() {
               return (
                 <div key={`sidebar-${uniqueId}`} className="flex gap-4 mb-6 border-b pb-4">
                   <div className="w-20 h-20 bg-gray-100 relative">
-                    <span className="text-xs flex items-center justify-center h-full">IMG</span>
+                      <Image src={item.image || ""} alt={item.name} fill/>
                   </div>
                   <div className="flex-1">
                     <h3 className="font-medium text-sm">{item.name}</h3>
                     <p className="text-gray-500 text-xs">Ilość: {item.quantity}</p>
                     <p className="font-bold mt-1">{(Number(item.price) || 0).toFixed(2)} PLN</p>
                   </div>
-                  <button onClick={() => removeFromCart(item.product_id)} className="text-red-500 text-sm hover:underline">Usuń</button>
+                  <button onClick={() => removeFromCart(item.product_id)} className="text-red-500 text-sm hover:underline cursor-pointer">Usuń</button>
                 </div>
               )
             }))

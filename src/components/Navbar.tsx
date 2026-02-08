@@ -1,4 +1,3 @@
-import { signOut } from "@/app/auth/actions";
 import { getUser } from "@/lib/getUser";
 import Link from "next/link";
 import Image from "next/image";
