@@ -43,12 +43,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const isFetching = useRef(false)
   const lastProcessingId = useRef<string | null>(null)
-  const lastProcessingTime = useRef<number>(0)
 
   const toggleCart = () => setIsCartOpen(!isCartOpen)
 
   const loadCart = async (userId?: string) => {
-    if (isFetching.current) return
+    if (isFetching.current && lastProcessingId.current === (userId || 'guest')) return
     isFetching.current = true
 
     try {
@@ -147,62 +146,41 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const addToCart = async (newItem: Partial<CartItem> & { id: string | number }) => {
-      const pId = String(newItem.product_id || newItem.id)
-      const now = Date.now()
+    const pId = String(newItem.product_id || newItem.id)
 
-      if (lastProcessingId.current === pId && (now - lastProcessingTime.current) < 300) return
-      lastProcessingId.current = pId
-      lastProcessingTime.current = now
+    setItems((prev) => {
+      const existingIdx = prev.findIndex((i) => String(i.product_id) === pId)
+      if (existingIdx > -1) {
+        const newItems = [...prev]
+        newItems[existingIdx] = { ...newItems[existingIdx], quantity: (newItems[existingIdx].quantity || 0) + 1 }
+        return newItems
+      }
+      const itemToAdd: CartItem = { ...newItem as CartItem, product_id: pId, quantity: 1, name: newItem.name || "Produkt", price: newItem.price || 0, image: newItem.image || "" }
+      return [...prev, itemToAdd]
+    })
 
-      setItems((prev) => {
-        const existingIdx = prev.findIndex((i) => String(i.product_id) === pId)
-        if (existingIdx > -1) {
-          const newItems = [...prev]
-          newItems[existingIdx] = { ...newItems[existingIdx], quantity: (newItems[existingIdx].quantity || 0) + 1 }
-          return newItems
-        }
-        const itemToAdd: CartItem = {
-          product_id: pId,
-          name: newItem.name || "Produkt",
-          price: newItem.price || 0,
-          image: newItem.image || "",
-          quantity: 1
-        }
-        return [...prev, itemToAdd]
-      })
+    setIsCartOpen(true)
 
-      setIsCartOpen(true)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const user = session?.user
 
-      try {
-        const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: existing } = await supabase.from("basket").select("id, quantity").eq("user_id", user.id).eq("product_id", Number(pId)).maybeSingle()
 
-        if (user) {
-          const { data: existing } = await supabase.from("basket").select("id, quantity").eq("user_id", user.id).eq("product_id", pId).maybeSingle()
-
-          if (existing) {
-            await supabase.from("basket").update({ quantity: existing.quantity + 1 }).eq("id", existing.id)
+        if (existing) {
+          await supabase.from("basket").update({ quantity: existing.quantity + 1 }).eq("id", existing.id)
         } else {
-          await supabase.from("basket").insert([{ product_id: pId, user_id: user.id, quantity: 1 }])
+          await supabase.from("basket").insert([{ product_id: Number(pId), user_id: user.id, quantity: 1 }])
         }
       } else {
-        const currentCookie = Cookies.get("basket")
-        const cart: CartItem[] = currentCookie ? JSON.parse(currentCookie) : []
-        const exIdx = cart.findIndex((i) => String(i.product_id || i.id) === pId)
-        if (exIdx > -1) {
-          cart[exIdx].quantity += 1
-        } else {
-          cart.push({
-            product_id: pId,
-            name: newItem.name || "Produkt",
-            price: newItem.price || 0,
-            image: newItem.image || "",
-            quantity: 1
-          })
-        }
+        const current = Cookies.get("basket")
+        const cart = current ? JSON.parse(current) : []
+
         Cookies.set("basket", JSON.stringify(cart), { expires: 7 })
       }
     } catch (err) {
-      // console.error(err)
+      console.error("Błąd:", err)
     }
   }
 
