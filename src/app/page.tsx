@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import ProductList from "../components/ProductList";
 import MainPageVideo from "@/components/MainPageVideo";
+import { useCart } from "@/context/CartContext";
 
 export default async function Home() {
   const supabase = await createClient()

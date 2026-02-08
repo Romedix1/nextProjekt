@@ -1,10 +1,18 @@
 'use client';
 
+import Loading from "@/components/loading";
 import { useCart } from "@/context/CartContext";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function CartPage() {
-  const { items, removeFromCart, cartTotal } = useCart();
+  const { items, removeFromCart, cartTotal, isLoaded } = useCart();
+
+  if (!isLoaded) {
+    return (
+      <Loading />
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -23,7 +31,9 @@ export default function CartPage() {
         <div className="lg:col-span-2 space-y-4">
           {items.map((item) => (
             <div key={item.product_id || item.id} className="flex gap-4 border p-4 rounded-lg">
-              <div className="w-24 h-24 bg-gray-100 rounded-md"></div>
+              <div className="w-24 h-24 relative bg-gray-100 rounded-md">
+                <Image src={item.image || ""} alt={item.name} fill className="object-cover" />
+              </div>
               <div className="flex-1">
                 <h3 className="font-bold text-lg">{item.name}</h3>
                 <p className="text-gray-500">Ilość: {item.quantity}</p>
@@ -32,7 +42,7 @@ export default function CartPage() {
                 <p className="font-bold text-lg">{item.price} PLN</p>
                 <button 
                   onClick={() => removeFromCart(item.product_id)}
-                  className="text-red-500 text-sm mt-2 hover:underline"
+                  className="text-red-500 text-sm mt-2 hover:underline cursor-pointer"
                 >
                   Usuń
                 </button>

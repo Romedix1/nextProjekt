@@ -28,7 +28,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
       <h3 style={{ margin: '10px 0' }}>{product.name}</h3>
       <p>{product.price} zł</p>
-      
+
       <AddToCartButton productId={product.id} name={product.name} price={product.price} image={product.image_url} />
     </div>
   );
