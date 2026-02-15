@@ -39,6 +39,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   const [isLoaded, setIsLoaded] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const supabase = createClient()
 
   const isFetching = useRef(false)
@@ -46,47 +47,88 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const toggleCart = () => setIsCartOpen(!isCartOpen)
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isLoaded) {
+        setIsLoaded(true)
+      }
+    }, 3000)
+
+    return () => clearTimeout(timer)
+  }, [isLoaded])
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      const userId = session?.user?.id
+
+      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+        if (userId) {
+          await syncCartAfterLogin(userId)
+          await loadCart(userId)
+        } else {
+          await loadCart()
+        }
+      }
+
+      if (event === 'SIGNED_OUT') {
+        setItems([])
+        await loadCart()
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [mounted])
+
+  if (!mounted) return null
+
   const loadCart = async (userId?: string) => {
     if (isFetching.current && lastProcessingId.current === (userId || 'guest')) return
     isFetching.current = true
 
     try {
       if (!userId) {
-        const { data } = await supabase.auth.getUser()
-        userId = data.user?.id
+        const { data: { session } } = await supabase.auth.getSession()
+        userId = session?.user?.id
       }
 
       if (!userId) {
         const saved = Cookies.get("basket")
         setItems(saved ? JSON.parse(saved) : [])
-        return
-      }
-
-      const { data: basketData, error: basketError } = await supabase.from("basket").select("*").eq("user_id", userId)
-
-      if (basketError) throw basketError
-
-      if (basketData && basketData.length > 0) {
-        const productIds = basketData.map(item => item.product_id)
-        const { data: productsData } = await supabase.from("products").select("*").in("id", productIds)
-
-        const groupedCart = basketData.reduce((acc: CartItem[], curr: BasketRow) => {
-          const productInfo = productsData?.find(p => p.id === curr.product_id)
-          const pId = String(curr.product_id)
-
-          const existingIdx = acc.findIndex(i => String(i.product_id || i.id) === pId)
-
-          if (existingIdx > -1) {
-            acc[existingIdx].quantity += (curr.quantity || 1)
-          } else {
-            acc.push({ ...curr, name: productInfo?.name || "Produkt", price: productInfo?.price || 0, image: productInfo?.image_url || productInfo?.image || "" })
-          }
-          return acc
-        }, [])
-
-        setItems(groupedCart)
       } else {
-        setItems([])
+        const { data: basketData, error: basketError } = await supabase.from("basket").select("*").eq("user_id", userId)
+
+        if (basketError) throw basketError
+
+        if (basketData && basketData.length > 0) {
+          const productIds = basketData.map(item => item.product_id)
+          const { data: productsData } = await supabase.from("products").select("*").in("id", productIds)
+
+          const groupedCart = basketData.reduce((acc: CartItem[], curr: BasketRow) => {
+            const productInfo = productsData?.find(p => p.id === curr.product_id)
+            const pId = String(curr.product_id)
+
+            const existingIdx = acc.findIndex(i => String(i.product_id || i.id) === pId)
+
+            if (existingIdx > -1) {
+              acc[existingIdx].quantity += (curr.quantity || 1)
+            } else {
+              acc.push({ ...curr, name: productInfo?.name || "Produkt", price: productInfo?.price || 0, image: productInfo?.image_url || productInfo?.image || "" })
+            }
+            return acc
+          }, [])
+
+          setItems(groupedCart)
+        } else {
+          setItems([])
+        }
       }
     } catch (err) {
       // console.error(err)
@@ -117,33 +159,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       // console.error(err)
     }
   }
-
-  useEffect(() => {
-    const checkInitialAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      await loadCart(session?.user?.id)
-    }
-
-    checkInitialAuth()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-        if (session?.user) {
-          await syncCartAfterLogin(session.user.id)
-          await loadCart(session.user.id)
-        }
-      }
-
-      if (event === 'SIGNED_OUT') {
-        setItems([])
-        await loadCart()
-      }
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [])
 
   const addToCart = async (newItem: Partial<CartItem> & { id: string | number }) => {
     const pId = String(newItem.product_id || newItem.id)
