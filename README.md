@@ -13,4 +13,4 @@ Aplikacja jest w pełni funkcjonalnym sklepem internetowym umożliwiającym prze
 
 
 ## Hosting
-https://next-projekt-2rdl49y9b-romedix1s-projects.vercel.app/
+https://next-projekt-gilt.vercel.app
